@@ -6,7 +6,15 @@
       <a href="/">Home</a>
       <a href="/products" class="text-indigo-600 font-medium">Solutions</a>
       <a href="/about">Company</a>
-      <a href="/login">Login</a>
+      @auth
+        <a href="/profile">Profile</a>
+        <form method="POST" action="/logout" class="inline">
+            @csrf
+            <button type="submit" class="text-gray-700">Logout</button>
+        </form>
+      @else
+        <a href="/login">Login</a>
+      @endauth
     </nav>
   </div>
 </header>

@@ -48,4 +48,10 @@ Route::middleware('auth')->group(function (){
     
 });
 
+// Profil utilisateur
+Route::middleware('auth')->group(function(){
+    Route::get('/profile',[App\Http\Controllers\ProfileController::class,'edit'])->name('profile.edit');
+    Route::post('/profile',[App\Http\Controllers\ProfileController::class,'update'])->name('profile.update');
+});
+
  

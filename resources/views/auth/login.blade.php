@@ -53,7 +53,7 @@
           <input type="checkbox" class="rounded border-gray-300 text-indigo-600">
           <span class="text-gray-600">Remember me</span>
         </label>
-        <a href="#" class="text-indigo-600 hover:underline">
+        <a href="/forgot-password" class="text-indigo-600 hover:underline">
           forgot password?
         </a>
       </div>
