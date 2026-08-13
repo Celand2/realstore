@@ -54,4 +54,18 @@ Route::middleware('auth')->group(function(){
     Route::post('/profile',[App\Http\Controllers\ProfileController::class,'update'])->name('profile.update');
 });
 
+// Orders (client)
+Route::prefix('client')->middleware(['auth','role:client'])->group(function(){
+    Route::get('/orders',[App\Http\Controllers\OrderController::class,'index'])->name('orders.index');
+    Route::get('/orders/{id}',[App\Http\Controllers\OrderController::class,'show'])->name('orders.show');
+    Route::post('/orders',[App\Http\Controllers\OrderController::class,'store'])->name('orders.store');
+});
+
+// Orders (client)
+Route::middleware(['auth','role:client'])->prefix('client')->group(function(){
+    Route::get('/orders',[App\Http\Controllers\OrderController::class,'index'])->name('orders.index');
+    Route::get('/orders/{id}',[App\Http\Controllers\OrderController::class,'show'])->name('orders.show');
+    Route::post('/orders',[App\Http\Controllers\OrderController::class,'store'])->name('orders.store');
+});
+
  

@@ -11,7 +11,7 @@
         <a href="/cart" class="flex items-center p-3 rounded hover:bg-gray-100">
             <span class="material-icons mr-3">shopping_cart</span> Mon panier
         </a>
-        <a href="/orders" class="flex items-center p-3 rounded hover:bg-gray-100">
+        <a href="/client/orders" class="flex items-center p-3 rounded hover:bg-gray-100">
             <span class="material-icons mr-3">receipt_long</span> Mes commandes
         </a>
         <a href="/profile" class="flex items-center p-3 rounded hover:bg-gray-100">

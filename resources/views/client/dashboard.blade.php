@@ -45,7 +45,7 @@
           <li><a href="/profile" class="text-indigo-600">Modifier mon profil</a></li>
           <li><a href="/client/products" class="text-indigo-600">Parcourir les produits</a></li>
           <li><a href="/cart" class="text-indigo-600">Mon panier</a></li>
-          <li><a href="/orders" class="text-indigo-600">Mes commandes</a></li>
+          <li><a href="/client/orders" class="text-indigo-600">Mes commandes</a></li>
         </ul>
       </div>
 
