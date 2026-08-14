@@ -32,6 +32,11 @@ Route::middleware('auth')->group(function (){
         Route::get('/edit-product/{id}',[ProductController::class,'editProduct'])->name('edit-product');
         Route::put('/update-product/{id}', [ProductController::class, 'updateProduct'])->name('update-product');
 
+        // Admin orders
+        Route::get('/orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/orders/{id}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+        Route::post('/orders/{id}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+
 
 
     });
@@ -42,6 +47,11 @@ Route::middleware('auth')->group(function (){
         Route::get('/products',[ClientController::class,'getProducts'])->name('client-get-product'); 
 
         Route::post('/add-cart', [CartController::class, 'addToCart']);
+        Route::get('/cart', [App\Http\Controllers\CartController::class,'index'])->name('cart.index');
+        Route::post('/cart/update', [App\Http\Controllers\CartController::class,'updateItem'])->name('cart.update');
+        Route::post('/cart/remove', [App\Http\Controllers\CartController::class,'removeItem'])->name('cart.remove');
+        Route::get('/cart/checkout', [App\Http\Controllers\CartController::class,'checkout'])->name('cart.checkout');
+        Route::post('/cart/checkout', [App\Http\Controllers\CartController::class,'processCheckout'])->name('cart.process');
 
     });
     

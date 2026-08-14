@@ -16,6 +16,9 @@
               <a href="/admin/products" class="flex items-center p-3 rounded hover:bg-gray-100">
                   <span class="material-icons mr-3">bar_chart</span> Products List
               </a>
+              <a href="/admin/orders" class="flex items-center p-3 rounded hover:bg-gray-100">
+                  <span class="material-icons mr-3">receipt_long</span> Orders
+              </a>
               <a href="#" class="flex items-center p-3 rounded hover:bg-gray-100">
                   <span class="material-icons mr-3">settings</span> Paramètres
               </a>

@@ -51,7 +51,7 @@
 
                         <div class="flex gap-2">
                             <!-- Bouton détails -->
-                            <button class="w-1/2 border border-indigo-600 text-indigo-600 py-2 rounded-lg text-sm font-medium hover:bg-indigo-50 transition">
+                            <button onclick='showDetails({{ json_encode($product) }})' class="w-1/2 border border-indigo-600 text-indigo-600 py-2 rounded-lg text-sm font-medium hover:bg-indigo-50 transition">
                                 Voir détails
                             </button>
 
@@ -104,15 +104,15 @@
 
                 <!-- Quantity -->
                 <div class="col-span-3 flex items-center justify-center gap-4">
-                    <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-200 hover:bg-gray-300 transition text-lg"> -</button>
+                    <button class="decreaseBtn w-10 h-10 flex items-center justify-center rounded-xl bg-gray-200 hover:bg-gray-300 transition text-lg"> -</button>
                     <span class="productQuantity w-12 text-center text-lg font-semibold"></span>
-                    <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition text-lg"> + </button>
+                    <button class="increaseBtn w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition text-lg"> + </button>
                 </div>
 
                 <!-- Total + Remove --> 
                 <div class="col-span-3 flex flex-col items-end gap-4">
                     <span class="totalPrice text-xl font-bold text-gray-800"></span>
-                    <button class="text-red-500 hover:text-red-700 font-medium">Supprimer</button>
+                    <button class="removeBtn text-red-500 hover:text-red-700 font-medium">Supprimer</button>
                 </div>
             </div>
         </template>
@@ -140,6 +140,28 @@
     </div>
 </div>
 
+<!-- Product Details Modal -->
+<div id="productModalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden items-center justify-center z-50">
+    <div id="productModalContent" class="bg-white w-full max-w-3xl mx-6 rounded-3xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 overflow-hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 id="pd_name" class="text-2xl font-bold"></h2>
+                    <p id="pd_category" class="text-sm text-gray-500"></p>
+                </div>
+                <button id="pd_close" class="text-3xl">&times;</button>
+            </div>
+            <div class="mt-4 flex gap-6">
+                <img id="pd_image" src="" alt="" class="w-48 h-48 object-cover rounded">
+                <div>
+                    <p id="pd_description" class="text-gray-700"></p>
+                    <p class="mt-4 text-xl font-bold text-indigo-600" id="pd_price"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
         
 @endsection
 
@@ -162,6 +184,9 @@
     const productNumber = document.getElementById('productNumber');
     const btnSave = document.getElementById('btnSave');
 
+    // Guard: if modal elements are missing on this page, do not attach modal logic.
+    const modalAvailable = overlay && modal && cartItemsContainer && cartItemTemplate;
+
     function addTocart(product){
 
         let existing = cart.products.find(p => p.id === product.id);
@@ -178,7 +203,9 @@
             });
         }
 
-        productNumber.textContent = cart.products.length;
+        if (productNumber) {
+            productNumber.textContent = cart.products.length;
+        }
         updateTotal();
     }
 
@@ -188,14 +215,18 @@
         axios.post('/client/add-cart', cart)
             .then(response => {
                 console.log(response.data);
-                closeModal();
+                if (modalAvailable) closeModal();
+                // Optionally update UI or show message
+                alert('Panier enregistré');
             })
             .catch(error => {
                 console.error('Error saving cart:', error);
+                alert('Erreur lors de la sauvegarde du panier');
             });
     }
 
     function viewCart(){
+        if (!modalAvailable) return;
 
         cartItemsContainer.innerHTML = '';
 
@@ -209,11 +240,71 @@
             clone.querySelector('.productQuantity').textContent = product.quantity;
             clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
 
+            // attach handlers for + / - / remove
+            const decreaseBtn = clone.querySelector('.decreaseBtn');
+            const increaseBtn = clone.querySelector('.increaseBtn');
+            const removeBtn = clone.querySelector('.removeBtn');
+
+            if (decreaseBtn) decreaseBtn.addEventListener('click', function(){
+                if(product.quantity > 1){
+                    product.quantity -= 1;
+                    clone.querySelector('.productQuantity').textContent = product.quantity;
+                    clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
+                    updateTotal();
+                }
+            });
+
+            if (increaseBtn) increaseBtn.addEventListener('click', function(){
+                product.quantity += 1;
+                clone.querySelector('.productQuantity').textContent = product.quantity;
+                clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
+                updateTotal();
+            });
+
+            if (removeBtn) removeBtn.addEventListener('click', function(){
+                // remove from cart.products and re-render
+                cart.products = cart.products.filter(p => p.id !== product.id);
+                viewCart();
+            });
+
             cartItemsContainer.appendChild(clone);
         });
 
         updateTotal();
     }
+
+    // Product details modal
+    const productModalOverlay = document.getElementById('productModalOverlay');
+    const productModalContent = document.getElementById('productModalContent');
+    const pd_close = document.getElementById('pd_close');
+
+    function showDetails(product){
+        document.getElementById('pd_name').textContent = product.name;
+        document.getElementById('pd_category').textContent = product.category ? product.category.name : '';
+        document.getElementById('pd_description').textContent = product.description || '';
+        document.getElementById('pd_price').textContent = product.price + ' BIF';
+        document.getElementById('pd_image').src = product.image ? ('/storage/' + product.image) : '';
+
+        productModalOverlay.classList.remove('hidden');
+        productModalOverlay.classList.add('flex');
+
+        setTimeout(() => {
+            productModalContent.classList.remove('scale-95','opacity-0');
+            productModalContent.classList.add('scale-100','opacity-100');
+        },10);
+    }
+
+    function closeProductModal(){
+        productModalContent.classList.remove('scale-100','opacity-100');
+        productModalContent.classList.add('scale-95','opacity-0');
+
+        setTimeout(()=>{
+            productModalOverlay.classList.add('hidden');
+            productModalOverlay.classList.remove('flex');
+        },200);
+    }
+
+    pd_close.addEventListener('click', closeProductModal);
 
     function calculateTotal(){
         return cart.products.reduce((sum, product) => {
@@ -247,10 +338,19 @@
         },200);
     }
 
-    openBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    btnSave.addEventListener('click', saveCart);
+    if (openBtn) {
+        if (modalAvailable) {
+            openBtn.addEventListener('click', openModal);
+        } else {
+            openBtn.addEventListener('click', function(){
+                alert('Panier non disponible ici. Va sur la page Produits pour ouvrir le panier.');
+            });
+        }
+    }
+
+    if (closeBtn && modalAvailable) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn && modalAvailable) cancelBtn.addEventListener('click', closeModal);
+    if (btnSave && modalAvailable) btnSave.addEventListener('click', saveCart);
 
 });
 

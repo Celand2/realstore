@@ -22,7 +22,7 @@ class OrderController extends Controller
     // Vue détail d'une commande
     public function show($id, Request $request)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items.product')->findOrFail($id);
 
         // Simple check: only owner can view
         if ($order->user_id !== $request->user()->id) {
