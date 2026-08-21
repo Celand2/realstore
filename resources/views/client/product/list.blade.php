@@ -2,6 +2,10 @@
 
 @section('title', 'Produits')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @section('content')
 
 <div class="space-y-3 mb-6">
@@ -45,7 +49,7 @@
                         
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-xl font-bold text-indigo-600">
-                                ${{ $product->price }}
+                                {{ number_format($product->price, 2) }} FC
                             </span>
                         </div>
 
@@ -134,7 +138,7 @@
 
             <div class="text-right mt-4 md:mt-0">
                 <span id='productNumber' class="text-xl font-semibold text-gray-700">Total :</span>
-                <span id='total' class="text-2xl font-bold text-indigo-600 ml-2">00  BIF</span>
+                <span id='total' class="text-2xl font-bold text-indigo-600 ml-2">00 FC</span>
             </div>
         </div>
     </div>
@@ -163,201 +167,5 @@
 </div>
 
         
+
 @endsection
-
-        @push('scripts')
-<script>
-    document.addEventListener("DOMContentLoaded", function(){
-
-    let cart = {
-        userID: {{ Auth::id() }},
-        products: []
-    };
-
-    const openBtn = document.getElementById('openModal');
-    const closeBtn = document.getElementById('closeModal');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const overlay = document.getElementById('modalOverlay');
-    const modal = document.getElementById('modalContent');
-    const cartItemsContainer = document.getElementById('cartItems');
-    const cartItemTemplate = document.getElementById('cartItemTemplate');
-    const productNumber = document.getElementById('productNumber');
-    const btnSave = document.getElementById('btnSave');
-
-    // Guard: if modal elements are missing on this page, do not attach modal logic.
-    const modalAvailable = overlay && modal && cartItemsContainer && cartItemTemplate;
-
-    function addTocart(product){
-
-        let existing = cart.products.find(p => p.id === product.id);
-
-        if(existing){
-            existing.quantity += 1;
-        }else{
-            cart.products.push({
-                id: product.id,
-                name: product.title,
-                price: product.price,
-                description: product.description,
-                quantity: 1
-            });
-        }
-
-        if (productNumber) {
-            productNumber.textContent = cart.products.length;
-        }
-        updateTotal();
-    }
-
-    window.addTocart = addTocart;
-
-    function saveCart(){
-        if (!cart.products.length) {
-            alert('Votre panier est vide.');
-            return;
-        }
-
-        axios.post('/client/add-cart', cart)
-            .then(response => {
-                console.log(response.data);
-                window.location.href = '{{ route('cart.checkout') }}';
-            })
-            .catch(error => {
-                console.error('Error saving cart:', error);
-                alert(error.response?.data?.message || 'Erreur lors de la sauvegarde du panier');
-            });
-    }
-
-    function viewCart(){
-        if (!modalAvailable) return;
-
-        cartItemsContainer.innerHTML = '';
-
-        cart.products.forEach(product => {
-
-            const clone = cartItemTemplate.content.cloneNode(true);
-
-            clone.querySelector('.productName').textContent = product.name;
-            clone.querySelector('.productDescription').textContent = product.description;
-            clone.querySelector('.productPrice').textContent = product.price + " BIF";
-            clone.querySelector('.productQuantity').textContent = product.quantity;
-            clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
-
-            // attach handlers for + / - / remove
-            const decreaseBtn = clone.querySelector('.decreaseBtn');
-            const increaseBtn = clone.querySelector('.increaseBtn');
-            const removeBtn = clone.querySelector('.removeBtn');
-
-            if (decreaseBtn) decreaseBtn.addEventListener('click', function(){
-                if(product.quantity > 1){
-                    product.quantity -= 1;
-                    clone.querySelector('.productQuantity').textContent = product.quantity;
-                    clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
-                    updateTotal();
-                }
-            });
-
-            if (increaseBtn) increaseBtn.addEventListener('click', function(){
-                product.quantity += 1;
-                clone.querySelector('.productQuantity').textContent = product.quantity;
-                clone.querySelector('.totalPrice').textContent = (product.price * product.quantity) + " BIF";
-                updateTotal();
-            });
-
-            if (removeBtn) removeBtn.addEventListener('click', function(){
-                // remove from cart.products and re-render
-                cart.products = cart.products.filter(p => p.id !== product.id);
-                viewCart();
-            });
-
-            cartItemsContainer.appendChild(clone);
-        });
-
-        updateTotal();
-    }
-
-    // Product details modal
-    const productModalOverlay = document.getElementById('productModalOverlay');
-    const productModalContent = document.getElementById('productModalContent');
-    const pd_close = document.getElementById('pd_close');
-
-    function showDetails(product){
-        document.getElementById('pd_name').textContent = product.title;
-        document.getElementById('pd_category').textContent = product.category ? product.category.name : '';
-        document.getElementById('pd_description').textContent = product.description || '';
-        document.getElementById('pd_price').textContent = product.price + ' BIF';
-        document.getElementById('pd_image').src = product.image ? ('/storage/' + product.image) : '';
-
-        productModalOverlay.classList.remove('hidden');
-        productModalOverlay.classList.add('flex');
-
-        setTimeout(() => {
-            productModalContent.classList.remove('scale-95','opacity-0');
-            productModalContent.classList.add('scale-100','opacity-100');
-        },10);
-    }
-
-    function closeProductModal(){
-        productModalContent.classList.remove('scale-100','opacity-100');
-        productModalContent.classList.add('scale-95','opacity-0');
-
-        setTimeout(()=>{
-            productModalOverlay.classList.add('hidden');
-            productModalOverlay.classList.remove('flex');
-        },200);
-    }
-
-    pd_close.addEventListener('click', closeProductModal);
-
-    function calculateTotal(){
-        return cart.products.reduce((sum, product) => {
-            return sum + (product.price * product.quantity);
-        }, 0);
-    }
-
-    function updateTotal(){
-        document.getElementById('total').textContent = calculateTotal() + " BIF";
-    }
-
-    function openModal(){
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
-
-        viewCart();
-
-        setTimeout(() => {
-            modal.classList.remove('scale-95','opacity-0');
-            modal.classList.add('scale-100','opacity-100');
-        },10);
-    }
-
-    function closeModal(){
-        modal.classList.remove('scale-100','opacity-100');
-        modal.classList.add('scale-95','opacity-0');
-
-        setTimeout(()=>{
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-        },200);
-    }
-
-    if (openBtn) {
-        if (modalAvailable) {
-            openBtn.addEventListener('click', openModal);
-        } else {
-            openBtn.addEventListener('click', function(){
-                alert('Panier non disponible ici. Va sur la page Produits pour ouvrir le panier.');
-            });
-        }
-    }
-
-    if (closeBtn && modalAvailable) closeBtn.addEventListener('click', closeModal);
-    if (cancelBtn && modalAvailable) cancelBtn.addEventListener('click', closeModal);
-    if (btnSave && modalAvailable) btnSave.addEventListener('click', saveCart);
-
-});
-
-
-</script>
-
-@endpush

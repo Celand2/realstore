@@ -21,7 +21,7 @@ class Cart extends Model
 
     // Cette fonction montre que un cart peut appartenir a plusieurs produits
     public function products():BelongsToMany{
-        return $this->belongsToMany(Product::class,'cart_products','product_id','cart_id')
+        return $this->belongsToMany(Product::class, 'cart_products', 'cart_id', 'product_id')
                     ->withPivot('quantity');
     }
 }

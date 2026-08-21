@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<body class="min-h-screen bg-gray-100 font-sans md:flex">
+<body class="min-h-screen bg-gray-100 font-sans md:flex"
+      data-cart-save-url="{{ url('/client/add-cart') }}"
+      data-cart-checkout-url="{{ url('/cart/checkout') }}">
     <!-- Sidebar (client partial) -->
     @include('partials.client.sidebar')
     <div data-sidebar-overlay class="fixed inset-0 z-40 hidden bg-black/50 md:hidden" aria-hidden="true"></div>

@@ -3,28 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    // Liste des commandes pour le client connecté
+    public function __construct(protected OrderService $orders) {}
+
     public function index(Request $request)
     {
-        $user = $request->user();
-        $orders = [];
-        if ($user) {
-            $orders = Order::where('user_id', $user->id)->get();
-        }
+        $orders = Order::where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         return view('client.orders.index', compact('orders'));
     }
 
-    // Vue détail d'une commande
     public function show($id, Request $request)
     {
         $order = Order::with('items.product')->findOrFail($id);
 
-        // Simple check: only owner can view
         if ($order->user_id !== $request->user()->id) {
             abort(403);
         }
@@ -32,39 +30,31 @@ class OrderController extends Controller
         return view('client.orders.show', compact('order'));
     }
 
-    // Créer une commande à partir d'un panier basique (simplifié)
     public function store(Request $request)
     {
         $data = $request->validate([
             'address' => 'required|string',
-            'total' => 'required|numeric',
         ]);
 
-        $order = Order::create([
-            'user_id' => $request->user()->id,
-            'address' => $data['address'],
-            'total' => $data['total'],
-            'status' => 'pending',
-        ]);
+        try {
+            $order = $this->orders->checkout(
+                $request->user()->id,
+                $data['address'],
+            );
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
 
         return redirect()->route('orders.show', $order->id)->with('status', 'Commande créée');
     }
 
-    // Annuler une commande (uniquement par son propriétaire, et uniquement si 'pending')
     public function cancel($id, Request $request)
     {
-        $order = Order::findOrFail($id);
-
-        if ($order->user_id !== $request->user()->id) {
-            abort(403);
+        try {
+            $this->orders->cancel($request->user()->id, (int) $id);
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        if ($order->status !== 'pending') {
-            return redirect()->back()->with('error', 'Cette commande ne peut plus être annulée.');
-        }
-
-        $order->status = 'cancelled';
-        $order->save();
 
         return redirect()->route('orders.index')->with('status', 'Commande annulée');
     }

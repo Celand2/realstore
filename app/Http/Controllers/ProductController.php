@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -19,26 +21,19 @@ class ProductController extends Controller
         return view('admin.product.addProduct', compact('categories'));
     }
 
-    public function storeProduct(Request $request){
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'category' => 'required|numeric',
-            'stock' => 'required|integer|min:0',
-        ]);
+    public function storeProduct(StoreProductRequest $request){
+        $data = $request->validated();
 
         $imagePath = $request->file('image')->store('products', 'public');
 
         Product::create([
-            'title' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
+            'title' => $data['name'],
+            'price' => $data['price'],
+            'description' => $data['description'],
             'image' => $imagePath,
             'actif' => 1,
-            'category_id' => $request->category,
-            'stock' => $request->stock,
+            'category_id' => $data['category'],
+            'stock' => $data['stock'],
         ]);
 
         return redirect()->route('get-products')->with('status', 'Produit ajouté avec succès !');
@@ -50,34 +45,25 @@ class ProductController extends Controller
         return view('admin.product.edit', compact('product', 'categories'));
     }
 
-    public function updateProduct(Request $request, $id)
+    public function updateProduct(UpdateProductRequest $request, $id)
     {
         $product = Product::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'required|string',
-            'category' => 'required|numeric',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
             // Supprimer l'ancienne image pour éviter l'accumulation
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            $imagePath = $request->file('image')->store('products', 'public');
-            $product->image = $imagePath;
+            $product->image = $request->file('image')->store('products', 'public');
         }
 
         $product->update([
-            'title' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'category_id' => $request->category,
-            'stock' => $request->stock,
+            'title' => $data['name'],
+            'price' => $data['price'],
+            'description' => $data['description'],
+            'category_id' => $data['category'],
+            'stock' => $data['stock'],
         ]);
 
         return redirect()->route('get-products')->with('status', 'Produit modifié avec succès !');
