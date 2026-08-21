@@ -9,7 +9,7 @@ class VisitorController extends Controller
 {
     //Methode permet d'afficher la page d'accueil
     public function home(){
-        return view('home');
+        return view('index');
     }
 
     //Methode permet d'afficher la page a propos

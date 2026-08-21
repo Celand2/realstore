@@ -14,9 +14,9 @@ use App\Http\Middleware\CheckProfile;
 //     return view('welcome');
 // });
 
-Route::get('/',[VisitorController::class,'home']);
-Route::get('/about',[VisitorController::class,'about']);
-Route::get('/products',[VisitorController::class,'products']);
+Route::get('/', [VisitorController::class, 'home'])->name('home');
+Route::get('/about', [VisitorController::class, 'about'])->name('about');
+Route::get('/products', [VisitorController::class, 'products'])->name('products');
 
 //Les routes qui passent par l'authentification
 Route::middleware('auth')->group(function (){

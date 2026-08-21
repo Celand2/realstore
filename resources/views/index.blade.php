@@ -15,10 +15,10 @@
           powering fintech innovation across emerging markets.
         </p>
         <div class="space-x-4">
-          <a href="/products" class="bg-white text-indigo-700 px-8 py-4 rounded-lg font-semibold">
+          <a href="{{ route('products') }}" class="bg-white text-indigo-700 px-8 py-4 rounded-lg font-semibold">
             Our Solutions
           </a>
-          <a href="/about" class="border border-white px-8 py-4 rounded-lg font-semibold">
+          <a href="{{ route('about') }}" class="border border-white px-8 py-4 rounded-lg font-semibold">
             About FintechX
           </a>
         </div>
@@ -75,7 +75,7 @@
       <p class="text-lg mb-10">
         Join companies transforming digital finance.
       </p>
-      <a href="/about" class="bg-white text-indigo-700 px-10 py-4 rounded-lg font-semibold">
+      <a href="{{ route('about') }}" class="bg-white text-indigo-700 px-10 py-4 rounded-lg font-semibold">
         Contact Sales
       </a>
     </div>

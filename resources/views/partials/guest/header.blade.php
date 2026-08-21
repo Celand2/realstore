@@ -1,11 +1,11 @@
 <!-- NAVBAR -->
 <header class="bg-white shadow sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold text-indigo-600">Realstore</a>
+        <a href="{{ route('home') }}" class="text-2xl font-bold text-indigo-600">Realstore</a>
         <nav class="space-x-6 font-medium flex items-center">
-            <a href="/" class="hover:text-indigo-600 transition">Accueil</a>
-            <a href="/products" class="hover:text-indigo-600 transition">Produits</a>
-            <a href="/about" class="hover:text-indigo-600 transition">À propos</a>
+            <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Accueil</a>
+            <a href="{{ route('products') }}" class="hover:text-indigo-600 transition">Produits</a>
+            <a href="{{ route('about') }}" class="hover:text-indigo-600 transition">À propos</a>
 
             @auth
                 @if(auth()->user()->role === 'admin')
