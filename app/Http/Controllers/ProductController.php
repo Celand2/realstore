@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -14,20 +15,21 @@ class ProductController extends Controller
     }
 
     public function addProduct(){
-        $categories = Category::all(); 
+        $categories = Category::all();
         return view('admin.product.addProduct', compact('categories'));
     }
 
     public function storeProduct(Request $request){
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric', 
+            'price' => 'required|numeric',
             'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category' => 'required|numeric',
+            'stock' => 'required|integer|min:0',
         ]);
 
-        $imagePath = $request->file('image')->store('products', 'public'); 
+        $imagePath = $request->file('image')->store('products', 'public');
 
         Product::create([
             'title' => $request->name,
@@ -36,6 +38,7 @@ class ProductController extends Controller
             'image' => $imagePath,
             'actif' => 1,
             'category_id' => $request->category,
+            'stock' => $request->stock,
         ]);
 
         return redirect()->route('get-products')->with('status', 'Produit ajouté avec succès !');
@@ -56,10 +59,15 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'description' => 'required|string',
             'category' => 'required|numeric',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image pour éviter l'accumulation
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
             $imagePath = $request->file('image')->store('products', 'public');
             $product->image = $imagePath;
         }
@@ -69,8 +77,29 @@ class ProductController extends Controller
             'price' => $request->price,
             'description' => $request->description,
             'category_id' => $request->category,
+            'stock' => $request->stock,
         ]);
 
         return redirect()->route('get-products')->with('status', 'Produit modifié avec succès !');
+    }
+
+    public function showProduct($id)
+    {
+        $product = Product::with('category')->findOrFail($id);
+        return view('admin.product.show', compact('product'));
+    }
+
+    public function deleteProduct($id)
+    {
+        $product = Product::findOrFail($id);
+
+        // Supprimer l'image associée si elle existe
+        if ($product->image && Storage::disk('public')->exists($product->image)) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $product->delete();
+
+        return redirect()->route('get-products')->with('status', 'Produit supprimé avec succès !');
     }
 }

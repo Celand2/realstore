@@ -9,6 +9,9 @@
     @if(session('status'))
         <div class="mb-4 text-green-600">{{ session('status') }}</div>
     @endif
+    @if(session('error'))
+        <div class="mb-4 text-red-600">{{ session('error') }}</div>
+    @endif
 
     @if(count($items))
         <div class="space-y-4">

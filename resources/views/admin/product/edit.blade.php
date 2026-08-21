@@ -56,6 +56,15 @@
         </div>
 
         <div class="col-span-2">
+            <input type="number"
+                   name="stock"
+                   value="{{ old('stock', $product->stock) }}"
+                   placeholder="Stock"
+                   min="0"
+                   class="p-3 border border-gray-300 rounded-lg w-full">
+        </div>
+
+        <div class="col-span-2">
             @if ($product->image)
                 <img src="{{ Storage::url($product->image) }}" 
                      alt="{{ $product->title }}" 

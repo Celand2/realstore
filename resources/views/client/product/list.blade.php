@@ -31,7 +31,7 @@
                     <div>
                         <!-- Nom -->
                         <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                            {{ $product->name }}
+                            {{ $product->title }}
                         </h3>
 
                         <!-- Description -->
@@ -196,7 +196,7 @@
         }else{
             cart.products.push({
                 id: product.id,
-                name: product.name,
+                name: product.title,
                 price: product.price,
                 description: product.description,
                 quantity: 1
@@ -212,16 +212,19 @@
     window.addTocart = addTocart;
 
     function saveCart(){
+        if (!cart.products.length) {
+            alert('Votre panier est vide.');
+            return;
+        }
+
         axios.post('/client/add-cart', cart)
             .then(response => {
                 console.log(response.data);
-                if (modalAvailable) closeModal();
-                // Optionally update UI or show message
-                alert('Panier enregistré');
+                window.location.href = '{{ route('cart.checkout') }}';
             })
             .catch(error => {
                 console.error('Error saving cart:', error);
-                alert('Erreur lors de la sauvegarde du panier');
+                alert(error.response?.data?.message || 'Erreur lors de la sauvegarde du panier');
             });
     }
 
@@ -279,7 +282,7 @@
     const pd_close = document.getElementById('pd_close');
 
     function showDetails(product){
-        document.getElementById('pd_name').textContent = product.name;
+        document.getElementById('pd_name').textContent = product.title;
         document.getElementById('pd_category').textContent = product.category ? product.category.name : '';
         document.getElementById('pd_description').textContent = product.description || '';
         document.getElementById('pd_price').textContent = product.price + ' BIF';

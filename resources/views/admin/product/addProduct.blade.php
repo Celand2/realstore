@@ -18,13 +18,10 @@
             @csrf
             <div class="col-span-2">
                 <select name="category"  class="p-3 border border-gray-300 rounded-lg w-full">
-                    <option>-- Category ---</option>
-                    @foreach ($categories as $category) 
-                        <option value="{{ $category->id }}">{{ $category->name }}</option> 
+                    <option value="">-- Category ---</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
-                    <option>Sexe</option>
-                    <option>Homme</option>
-                    <option>Femme</option>
                 </select>
                 @error('category')
                     <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
@@ -49,6 +46,12 @@
             </div>
                 @error('description')
                         <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                @enderror
+            <div class="col-span-2">
+                <input type="number" placeholder="Stock" name="stock" min="0" value="{{ old('stock', 0) }}" class="p-3 border border-gray-300 rounded-lg w-full">
+            </div>
+                @error('stock')
+                    <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
                 @enderror
             <div class="col-span-2">
                 <input type="file" name="image" accept="image/" class=" p-3 border border-gray-300 rounded-lg w-full">

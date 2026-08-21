@@ -47,10 +47,12 @@
                             <td class="p-3 border-b" text-center>{{ $category->name }}</td>
                             <td class="p-3 border-b" text-center>{{ $category->created_at }}</td>
                             <td class="p-3 border-b flex space-x-2 justify-center">
-                                <button
-                                    class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">Editer</button>
-                               <a href="{{ route('delete-category', $category->id) }}"> <button
-                                    class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">Supprimer</button></a>
+                                <a href="{{ route('edit-category', $category->id) }}">
+                                    <button type="button" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">Editer</button>
+                                </a>
+                                <a href="{{ route('delete-category', $category->id) }}" onclick="return confirm('Supprimer cette catégorie ?')">
+                                    <button type="button" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">Supprimer</button>
+                                </a>
                             </td>
                         </tr>
                       @endforeach

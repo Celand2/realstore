@@ -26,7 +26,7 @@
         <tbody>
             @foreach($order->items as $item)
             <tr class="border-t">
-                <td class="px-4 py-2">{{ $item->product?->name ?? 'N/A' }}</td>
+                <td class="px-4 py-2">{{ $item->product?->title ?? 'N/A' }}</td>
                 <td class="px-4 py-2">{{ $item->quantity }}</td>
                 <td class="px-4 py-2">{{ number_format($item->price,2) }}</td>
                 <td class="px-4 py-2">{{ number_format($item->price * $item->quantity,2) }}</td>

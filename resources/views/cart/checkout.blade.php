@@ -6,6 +6,10 @@
 <div class="max-w-4xl mx-auto px-6 py-12">
     <h1 class="text-2xl font-bold mb-6">Checkout</h1>
 
+    @if(session('error'))
+        <div class="mb-4 text-red-600">{{ session('error') }}</div>
+    @endif
+
     <div class="bg-white p-6 rounded shadow">
         <form action="{{ route('cart.process') }}" method="POST">
             @csrf
@@ -14,8 +18,6 @@
                 <textarea name="address" class="w-full border p-3 rounded" rows="4">{{ old('address') }}</textarea>
                 @error('address')<p class="text-red-600 text-sm">{{ $message }}</p>@enderror
             </div>
-
-            <input type="hidden" name="total" value="{{ $total }}">
 
             <div class="flex justify-between items-center">
                 <div class="text-lg">Total: <strong>{{ number_format($total,2) }} FC</strong></div>

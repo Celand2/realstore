@@ -17,7 +17,8 @@ class Product extends Model
         'price',
         'image',
         'description',
-        'actif'
+        'actif',
+        'stock',
     ];
 
     // Cette fonction montre que un product appartient a un seul users

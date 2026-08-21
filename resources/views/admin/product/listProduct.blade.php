@@ -31,6 +31,7 @@
                     <th class="p-3 border-b text-left">Category</th>
                     <th class="p-3 border-b text-left">Title</th>
                     <th class="p-3 border-b text-left">Price</th>
+                    <th class="p-3 border-b text-left">Stock</th>
                     <th class="p-3 border-b text-left">Status</th>
                     <th class="p-3 border-b text-left">Image</th>
                     <th class="p-3 border-b text-left">Actions</th>
@@ -55,6 +56,14 @@
 
                     <td class="p-3 border-b">
                         {{ $product->price }} $
+                    </td>
+
+                    <td class="p-3 border-b">
+                        @if (($product->stock ?? 0) > 0)
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">{{ $product->stock }}</span>
+                        @else
+                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Rupture</span>
+                        @endif
                     </td>
 
                     <td class="p-3 border-b">
@@ -86,13 +95,18 @@
                             Editer
                         </a>
 
-                        <button class="bg-orange-500 text-white py-1 px-3 rounded hover:bg-orange-600 transition">
+                        <a href="{{ route('show-product', $product->id) }}"
+                           class="bg-orange-500 text-white py-1 px-3 rounded hover:bg-orange-600 transition">
                             Voir
-                        </button>
+                        </a>
 
-                        <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">
-                            Supprimer
-                        </button>
+                        <form action="{{ route('delete-product', $product->id) }}" method="POST" onsubmit="return confirm('Supprimer ce produit ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">
+                                Supprimer
+                            </button>
+                        </form>
 
                     </td>
 
@@ -100,7 +114,7 @@
 
                 @empty
                 <tr>
-                    <td colspan="7" class="text-center p-6 text-gray-500">
+                    <td colspan="8" class="text-center p-6 text-gray-500">
                         Aucun produit trouvé.
                     </td>
                 </tr>

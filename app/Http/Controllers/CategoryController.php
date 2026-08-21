@@ -28,4 +28,22 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->route('list-categories')->with('status','la categorie a été supprimé avec succès !');
     }
+
+    public function editCategory($id){
+        $category = Category::findOrFail($id);
+        return view('admin.category.edit', compact('category'));
+    }
+
+    public function updateCategory(Request $request, $id){
+        $category = Category::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $category->update($data);
+
+        return redirect()->route('list-categories')->with('status', 'La catégorie a été modifiée avec succès !');
+    }
 }

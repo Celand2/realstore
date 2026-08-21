@@ -49,4 +49,23 @@ class OrderController extends Controller
 
         return redirect()->route('orders.show', $order->id)->with('status', 'Commande créée');
     }
+
+    // Annuler une commande (uniquement par son propriétaire, et uniquement si 'pending')
+    public function cancel($id, Request $request)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        if ($order->status !== 'pending') {
+            return redirect()->back()->with('error', 'Cette commande ne peut plus être annulée.');
+        }
+
+        $order->status = 'cancelled';
+        $order->save();
+
+        return redirect()->route('orders.index')->with('status', 'Commande annulée');
+    }
 }

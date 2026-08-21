@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-use App\Models\Product;
-
 class CartProduct extends Model
 {
     protected $table = 'cart_products';
@@ -19,5 +17,10 @@ class CartProduct extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function cart(): BelongsTo
+    {
+        return $this->belongsTo(Cart::class, 'cart_id', 'id');
     }
 }
