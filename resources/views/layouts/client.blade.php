@@ -11,7 +11,9 @@
 
 <body class="min-h-screen bg-gray-100 font-sans md:flex"
       data-cart-save-url="{{ url('/client/add-cart') }}"
-      data-cart-checkout-url="{{ url('/cart/checkout') }}">
+    data-cart-checkout-url="{{ route('cart.checkout') }}"
+    data-cart-page-url="{{ route('cart.index') }}"
+    data-cart-items="@json($cartItems ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)">
     <!-- Sidebar (client partial) -->
     @include('partials.client.sidebar')
     <div data-sidebar-overlay class="fixed inset-0 z-40 hidden bg-black/50 md:hidden" aria-hidden="true"></div>

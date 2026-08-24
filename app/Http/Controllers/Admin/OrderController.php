@@ -16,6 +16,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        $id = $this->decodeId($id);
         $order = Order::with('items.product', 'user')->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
@@ -26,7 +27,7 @@ class OrderController extends Controller
             'status' => 'required|string',
         ]);
 
-        $order = Order::findOrFail($id);
+        $order = Order::findOrFail($this->decodeId($id));
         $order->status = $request->status;
         $order->save();
 

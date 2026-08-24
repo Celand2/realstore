@@ -51,11 +51,11 @@
                         </td>
                         <td class="p-3 border-b">{{ $user->created_at->format('Y-m-d H:i') }}</td>
                         <td class="p-3 border-b flex space-x-2">
-                            <a href="{{ route('admin.users.edit', $user->id) }}" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">
+                            <a href="{{ route('admin.users.edit', \Vinkla\Hashids\Facades\Hashids::encode($user->id)) }}" class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">
                                 Éditer
                             </a>
                             @if($user->id !== auth()->id())
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+                                <form action="{{ route('admin.users.destroy', \Vinkla\Hashids\Facades\Hashids::encode($user->id)) }}" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?')">
                                     @csrf
                                     @method('DELETE')
                                     <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">

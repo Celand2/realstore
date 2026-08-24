@@ -38,12 +38,14 @@ class UserController extends Controller
 
     public function edit($id)
     {
+        $id = $this->decodeId($id);
         $user = User::findOrFail($id);
         return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, $id)
     {
+        $id = $this->decodeId($id);
         $user = User::findOrFail($id);
 
         $data = $request->validate([
@@ -66,6 +68,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $id = $this->decodeId($id);
         $user = User::findOrFail($id);
 
         // Un admin ne peut pas se supprimer lui-même

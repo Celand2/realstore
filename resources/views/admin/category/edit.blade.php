@@ -18,7 +18,7 @@
         </a>
     </div>
 
-    <form action="{{ route('update-category', $category->id) }}" method="POST" class="space-y-4">
+    <form action="{{ route('update-category', \Vinkla\Hashids\Facades\Hashids::encode($category->id)) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 

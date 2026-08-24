@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -21,17 +21,20 @@ class CategoryController extends Controller
     }
 
     public function deleteCategory($id){
+        $id = $this->decodeId($id);
         $category = Category::findOrFail($id);
         $category->delete();
         return redirect()->route('list-categories')->with('status','La catégorie a été supprimée avec succès !');
     }
 
     public function editCategory($id){
+        $id = $this->decodeId($id);
         $category = Category::findOrFail($id);
         return view('admin.category.edit', compact('category'));
     }
 
     public function updateCategory(UpdateCategoryRequest $request, $id){
+        $id = $this->decodeId($id);
         $category = Category::findOrFail($id);
         $category->update($request->validated());
 

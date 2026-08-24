@@ -21,6 +21,7 @@ class OrderController extends Controller
 
     public function show($id, Request $request)
     {
+        $id = $this->decodeId($id);
         $order = Order::with('items.product')->findOrFail($id);
 
         if ($order->user_id !== $request->user()->id) {
@@ -45,11 +46,12 @@ class OrderController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('orders.show', $order->id)->with('status', 'Commande créée');
+        return redirect()->route('orders.show', \Vinkla\Hashids\Facades\Hashids::encode($order->id))->with('status', 'Commande créée');
     }
 
     public function cancel($id, Request $request)
     {
+        $id = $this->decodeId($id);
         try {
             $this->orders->cancel($request->user()->id, (int) $id);
         } catch (\RuntimeException $e) {

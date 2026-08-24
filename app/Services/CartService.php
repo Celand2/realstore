@@ -47,9 +47,35 @@ class CartService
      * @param  array<int, array{id: int, quantity: int}>  $products
      * @throws RuntimeException
      */
-    public function addProducts(int $userId, array $products): Cart
+    public function addProducts(int $userId, array $products, bool $sync = false): Cart
     {
         $cart = $this->getOrCreateCart($userId);
+
+        if ($sync) {
+            $requestedQuantities = collect($products)->pluck('quantity', 'id');
+
+            foreach ($products as $productData) {
+                $product = Product::findOrFail($productData['id']);
+                $quantity = (int) $productData['quantity'];
+
+                if ($quantity > $product->stock) {
+                    throw new RuntimeException(
+                        "Stock insuffisant pour « {$product->title} ». Disponible : {$product->stock}."
+                    );
+                }
+
+                CartProduct::updateOrCreate(
+                    ['cart_id' => $cart->id, 'product_id' => $product->id],
+                    ['quantity' => $quantity],
+                );
+            }
+
+            CartProduct::where('cart_id', $cart->id)
+                ->whereNotIn('product_id', $requestedQuantities->keys())
+                ->delete();
+
+            return $cart;
+        }
 
         foreach ($products as $productData) {
             $product = Product::findOrFail($productData['id']);

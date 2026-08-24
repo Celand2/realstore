@@ -13,7 +13,7 @@
 <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
     <h2 class="text-xl font-bold mb-4">Modifier un Produit</h2>
 
-    <form action="{{ route('update-product', $product->id) }}" 
+    <form action="{{ route('update-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}"
           method="POST" 
           enctype="multipart/form-data" 
           class="grid grid-cols-1 md:grid-cols-2 gap-4">

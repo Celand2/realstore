@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-4">
+    <form action="{{ route('admin.users.update', \Vinkla\Hashids\Facades\Hashids::encode($user->id)) }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 

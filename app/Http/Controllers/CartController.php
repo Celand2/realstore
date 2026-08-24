@@ -23,6 +23,7 @@ class CartController extends Controller
             'products' => 'required|array|min:1',
             'products.*.id' => 'required|integer|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
+            'sync' => 'sometimes|boolean',
         ]);
 
         $userId = Auth::id();
@@ -31,9 +32,17 @@ class CartController extends Controller
         }
 
         try {
-            $this->carts->addProducts($userId, $request->input('products'));
+            $this->carts->addProducts(
+                $userId,
+                $request->input('products'),
+                $request->boolean('sync'),
+            );
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        if (!$request->expectsJson()) {
+            return redirect()->route('cart.index')->with('status', 'Produit ajouté au panier.');
         }
 
         return response()->json(['message' => 'Panier enregistré avec succès !'], 200);
@@ -100,6 +109,6 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('orders.show', $order->id)->with('status', 'Commande créée');
+        return redirect()->route('orders.show', \Vinkla\Hashids\Facades\Hashids::encode($order->id))->with('status', 'Commande créée');
     }
 }

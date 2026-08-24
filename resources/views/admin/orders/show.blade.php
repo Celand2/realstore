@@ -3,49 +3,62 @@
 @section('title','Order #'.$order->id)
 
 @section('content')
-<div class="container mx-auto">
+<div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold mb-4">Order #{{ $order->id }}</h1>
 
-    <div class="mb-4">
-        <strong>User:</strong> {{ $order->user?->name }}<br>
-        <strong>Total:</strong> {{ number_format($order->total,2) }}<br>
-        <strong>Status:</strong> {{ $order->status }}<br>
-        <strong>Address:</strong> {{ $order->address }}
+    <div class="mb-4 bg-white p-4 sm:p-6 rounded shadow">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <p><strong>User:</strong> {{ $order->user?->name }}</p>
+            <p><strong>Total:</strong> {{ number_format($order->total,2) }}</p>
+            <p><strong>Status:</strong> {{ $order->status }}</p>
+            <p class="sm:col-span-2"><strong>Address:</strong> {{ $order->address }}</p>
+        </div>
     </div>
 
     <h2 class="text-xl font-semibold mb-2">Items</h2>
-    <table class="min-w-full bg-white">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Product</th>
-                <th class="px-4 py-2">Quantity</th>
-                <th class="px-4 py-2">Price</th>
-                <th class="px-4 py-2">Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($order->items as $item)
-            <tr class="border-t">
-                <td class="px-4 py-2">{{ $item->product?->title ?? 'N/A' }}</td>
-                <td class="px-4 py-2">{{ $item->quantity }}</td>
-                <td class="px-4 py-2">{{ number_format($item->price,2) }}</td>
-                <td class="px-4 py-2">{{ number_format($item->price * $item->quantity,2) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="bg-white rounded shadow">
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 border-b text-left">Product</th>
+                        <th class="px-4 py-2 border-b text-center">Quantity</th>
+                        <th class="px-4 py-2 border-b text-right">Price</th>
+                        <th class="px-4 py-2 border-b text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($order->items as $item)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border-b">{{ $item->product?->title ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 border-b text-center">{{ $item->quantity }}</td>
+                            <td class="px-4 py-2 border-b text-right whitespace-nowrap">{{ number_format($item->price,2) }}</td>
+                            <td class="px-4 py-2 border-b text-right whitespace-nowrap">{{ number_format($item->price * $item->quantity,2) }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-6 text-center text-gray-500">Aucun article.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <div class="mt-4">
-        <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
+    <div class="mt-4 bg-white p-4 sm:p-6 rounded shadow">
+        <form method="POST" action="{{ route('admin.orders.updateStatus', \Vinkla\Hashids\Facades\Hashids::encode($order->id)) }}" class="flex flex-col sm:flex-row sm:items-center gap-3">
             @csrf
-            <label for="status">Status</label>
-            <select name="status" id="status" class="border p-2">
+            <label for="status" class="font-medium">Status</label>
+            <select name="status" id="status" class="border p-2 rounded w-full sm:w-auto">
                 <option value="pending" @if($order->status=='pending') selected @endif>Pending</option>
                 <option value="processing" @if($order->status=='processing') selected @endif>Processing</option>
                 <option value="completed" @if($order->status=='completed') selected @endif>Completed</option>
                 <option value="cancelled" @if($order->status=='cancelled') selected @endif>Cancelled</option>
             </select>
-            <button class="ml-2 px-4 py-2 bg-blue-600 text-white">Update</button>
+            <button type="submit"
+                    class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                Update
+            </button>
         </form>
     </div>
 </div>

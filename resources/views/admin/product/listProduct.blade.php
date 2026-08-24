@@ -90,17 +90,17 @@
 
                     <td class="p-8 border-b flex space-x-2">
 
-                        <a href="{{ route('edit-product', $product->id) }}"
+                        <a href="{{ route('edit-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}"
                            class="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition">
                             Editer
                         </a>
 
-                        <a href="{{ route('show-product', $product->id) }}"
+                        <a href="{{ route('show-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}"
                            class="bg-orange-500 text-white py-1 px-3 rounded hover:bg-orange-600 transition">
                             Voir
                         </a>
 
-                        <form action="{{ route('delete-product', $product->id) }}" method="POST" onsubmit="return confirm('Supprimer ce produit ?')">
+                        <form action="{{ route('delete-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}" method="POST" onsubmit="return confirm('Supprimer ce produit ?')">
                             @csrf
                             @method('DELETE')
                             <button class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition">

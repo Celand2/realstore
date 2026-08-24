@@ -40,6 +40,7 @@ class ProductController extends Controller
     }
 
     public function editProduct($id){
+        $id = $this->decodeId($id);
         $product = Product::findOrFail($id);
         $categories = Category::all();
         return view('admin.product.edit', compact('product', 'categories'));
@@ -47,6 +48,7 @@ class ProductController extends Controller
 
     public function updateProduct(UpdateProductRequest $request, $id)
     {
+        $id = $this->decodeId($id);
         $product = Product::findOrFail($id);
         $data = $request->validated();
 
@@ -71,12 +73,14 @@ class ProductController extends Controller
 
     public function showProduct($id)
     {
+        $id = $this->decodeId($id);
         $product = Product::with('category')->findOrFail($id);
         return view('admin.product.show', compact('product'));
     }
 
     public function deleteProduct($id)
     {
+        $id = $this->decodeId($id);
         $product = Product::findOrFail($id);
 
         // Supprimer l'image associée si elle existe

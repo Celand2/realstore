@@ -64,10 +64,10 @@
             </div>
 
             <div class="flex gap-3 pt-4">
-                <a href="{{ route('edit-product', $product->id) }}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+                <a href="{{ route('edit-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
                     Éditer
                 </a>
-                <form action="{{ route('delete-product', $product->id) }}" method="POST" onsubmit="return confirm('Supprimer ce produit ? Cette action est irréversible.')">
+                <form action="{{ route('delete-product', \Vinkla\Hashids\Facades\Hashids::encode($product->id)) }}" method="POST" onsubmit="return confirm('Supprimer ce produit ? Cette action est irréversible.')">
                     @csrf
                     @method('DELETE')
                     <button class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition">

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Vinkla\Hashids\Facades\Hashids;
 
 class UpdateCategoryRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class UpdateCategoryRequest extends FormRequest
 
     public function rules(): array
     {
-        $categoryId = $this->route('id');
+        $decoded = Hashids::decode((string) $this->route('id'));
+        $categoryId = $decoded[0] ?? 0;
         return [
             'name' => "required|string|max:255|unique:categories,name,{$categoryId}",
             'description' => 'nullable|string',
