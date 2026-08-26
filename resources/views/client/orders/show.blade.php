@@ -8,7 +8,7 @@
 
     <div class="bg-white p-4 sm:p-6 rounded shadow mb-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <p><strong>Statut :</strong> {{ $order->status }}</p>
+            <p><strong>Statut :</strong> {{ ['pending' => 'En attente', 'confirmed' => 'Confirmée', 'processing' => 'En préparation', 'shipped' => 'Expédiée', 'delivered' => 'Livrée', 'cancelled' => 'Annulée'][$order->status] ?? $order->status }}</p>
             <p><strong>Total :</strong> {{ number_format($order->total,2) }} FC</p>
             <p class="sm:col-span-2"><strong>Adresse :</strong> {{ $order->address }}</p>
         </div>

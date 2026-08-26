@@ -1,62 +1,53 @@
 @extends('layouts.guest')
 
-@section('title','Solutions')
+@section('title','Produits')
 
 @section('content')
 
-  <section class="bg-indigo-700 text-white py-24 text-center">
-    <h1 class="text-5xl font-bold mb-6">Our Financial Solutions</h1>
-    <p class="text-xl max-w-3xl mx-auto">
-      Modular fintech products designed to scale with your business.
-    </p>
+  <section class="bg-indigo-700 text-white py-16 text-center">
+    <h1 class="text-4xl font-bold mb-4">Nos produits</h1>
+    <p class="text-lg">Trouvez le produit qui vous convient.</p>
   </section>
 
-  <section class="max-w-7xl mx-auto px-6 py-28 space-y-24">
+  <section class="max-w-7xl mx-auto px-6 py-12">
+    <form method="GET" action="{{ route('products') }}" class="grid md:grid-cols-4 gap-3 mb-10">
+      <input name="q" value="{{ request('q') }}" type="search" placeholder="Rechercher un produit" class="border rounded-lg px-4 py-2 md:col-span-2">
+      <select name="category" class="border rounded-lg px-4 py-2">
+        <option value="">Toutes les catégories</option>
+        @foreach($categories as $category)
+          <option value="{{ $category->id }}" @selected((string) request('category') === (string) $category->id)>{{ $category->name }}</option>
+        @endforeach
+      </select>
+      <select name="sort" class="border rounded-lg px-4 py-2">
+        <option value="">Plus récents</option>
+        <option value="price_asc" @selected(request('sort') === 'price_asc')>Prix croissant</option>
+        <option value="price_desc" @selected(request('sort') === 'price_desc')>Prix décroissant</option>
+      </select>
+      <button class="md:col-span-4 bg-indigo-600 text-white rounded-lg px-4 py-2 hover:bg-indigo-700">Rechercher</button>
+    </form>
 
-  <div class="grid lg:grid-cols-2 gap-16 items-center">
-    <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3" class="rounded-2xl shadow">
-    <div>
-      <h2 class="text-3xl font-bold mb-6">Payment Gateway</h2>
-      <p class="mb-6">
-        Unified payments supporting mobile money, cards and bank transfers.
-      </p>
-      <ul class="list-disc ml-6 space-y-2">
-        <li>Multi-currency support</li>
-        <li>Instant settlement</li>
-        <li>Fraud protection</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="grid lg:grid-cols-2 gap-16 items-center">
-    <div>
-      <h2 class="text-3xl font-bold mb-6">Virtual Cards Issuance</h2>
-      <p class="mb-6">
-        Create, manage and control virtual cards programmatically.
-      </p>
-      <ul class="list-disc ml-6 space-y-2">
-        <li>Spending limits</li>
-        <li>Real-time monitoring</li>
-        <li>Merchant controls</li>
-      </ul>
-    </div>
-    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c" class="rounded-2xl shadow">
-  </div>
-
-  <div class="grid lg:grid-cols-2 gap-16 items-center">
-    <img src="https://images.unsplash.com/photo-1605902711622-cfb43c44367f" class="rounded-2xl shadow">
-    <div>
-      <h2 class="text-3xl font-bold mb-6">Merchant Dashboard</h2>
-      <p class="mb-6">
-        Centralized control panel for operations and analytics.
-      </p>
-      <ul class="list-disc ml-6 space-y-2">
-        <li>Transaction analytics</li>
-        <li>User management</li>
-        <li>Settlement reports</li>
-      </ul>
-    </div>
-  </div>
-
-</section>
+    @if($products->isEmpty())
+      <p class="text-gray-600">Aucun produit ne correspond à votre recherche.</p>
+    @else
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @foreach ($products as $product)
+          <article class="bg-white rounded-2xl shadow-md overflow-hidden">
+            <a href="{{ route('products.show', $product->id) }}">
+              <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->title }}" class="w-full h-48 object-cover">
+            </a>
+            <div class="p-5">
+              <p class="text-xs text-indigo-600 mb-1">{{ $product->category->name }}</p>
+              <h2 class="font-semibold text-lg"><a href="{{ route('products.show', $product->id) }}">{{ $product->title }}</a></h2>
+              <p class="text-indigo-600 font-bold mt-3">{{ number_format($product->price, 2) }} FC</p>
+              <p class="text-sm mt-1 {{ $product->stock > 0 ? 'text-gray-500' : 'text-red-600' }}">
+                {{ $product->stock > 0 ? $product->stock . ' disponible(s)' : 'Rupture de stock' }}
+              </p>
+              <a href="{{ route('products.show', $product->id) }}" class="block text-center mt-4 border border-indigo-600 text-indigo-600 py-2 rounded-lg">Voir le produit</a>
+            </div>
+          </article>
+        @endforeach
+      </div>
+      <div class="mt-10">{{ $products->links() }}</div>
+    @endif
+  </section>
 @endsection

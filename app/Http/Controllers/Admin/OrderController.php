@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Services\OrderService;
 
 class OrderController extends Controller
 {
+    public function __construct(protected OrderService $orders) {}
+
     public function index()
     {
         $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(20);
@@ -23,14 +26,16 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|string',
+        $data = $request->validate([
+            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled',
         ]);
 
-        $order = Order::findOrFail($this->decodeId($id));
-        $order->status = $request->status;
-        $order->save();
+        try {
+            $this->orders->updateStatus($this->decodeId($id), $data['status']);
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
 
-        return redirect()->back()->with('success', 'Order status updated.');
+        return redirect()->back()->with('success', 'Statut de la commande mis à jour.');
     }
 }

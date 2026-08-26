@@ -26,11 +26,11 @@
                                 <td class="p-3 border-b whitespace-nowrap">{{ number_format($order->total,2) }} FC</td>
                                 <td class="p-3 border-b">
                                     <span class="px-2 py-1 rounded text-xs
-                                        @if($order->status === 'completed') bg-green-100 text-green-800
+                                        @if(in_array($order->status, ['delivered', 'completed'])) bg-green-100 text-green-800
                                         @elseif($order->status === 'pending') bg-yellow-100 text-yellow-800
                                         @elseif($order->status === 'cancelled') bg-red-100 text-red-800
                                         @else bg-blue-100 text-blue-800 @endif">
-                                        {{ $order->status }}
+                                        {{ ['pending' => 'En attente', 'confirmed' => 'Confirmée', 'processing' => 'En préparation', 'shipped' => 'Expédiée', 'delivered' => 'Livrée', 'cancelled' => 'Annulée', 'completed' => 'Terminée'][$order->status] ?? $order->status }}
                                     </span>
                                 </td>
                                 <td class="p-3 border-b whitespace-nowrap">{{ $order->created_at->format('Y-m-d H:i') }}</td>

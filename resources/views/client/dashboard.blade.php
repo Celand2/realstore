@@ -10,12 +10,31 @@
       <h1 class="text-3xl font-bold mb-4">Bienvenue, {{ auth()->user()->name }}</h1>
       <p class="text-gray-600 mb-6">Voici un aperçu rapide de vos produits et activités récentes.</p>
 
-      <h2 class="text-xl font-semibold mb-3">Produits recommandés</h2>
+      <h2 class="text-xl font-semibold mb-3">Produits</h2>
+      <form method="GET" action="{{ route('client.dashboard') }}" class="grid sm:grid-cols-4 gap-3 mb-6">
+        <input name="q" value="{{ request('q') }}" type="search" placeholder="Rechercher un produit" class="border rounded-lg px-4 py-2 sm:col-span-2">
+        <select name="category" class="border rounded-lg px-4 py-2">
+          <option value="">Toutes les catégories</option>
+          @foreach($categories as $category)
+            <option value="{{ $category->id }}" @selected((string) request('category') === (string) $category->id)>{{ $category->name }}</option>
+          @endforeach
+        </select>
+        <select name="sort" class="border rounded-lg px-4 py-2">
+          <option value="">Plus récents</option>
+          <option value="price_asc" @selected(request('sort') === 'price_asc')>Prix croissant</option>
+          <option value="price_desc" @selected(request('sort') === 'price_desc')>Prix décroissant</option>
+        </select>
+        <button type="submit" class="sm:col-span-4 bg-indigo-600 text-white rounded-lg px-4 py-2 hover:bg-indigo-700">Rechercher</button>
+      </form>
+
+      @if($products->isEmpty())
+        <p class="text-gray-600">Aucun produit ne correspond à votre recherche.</p>
+      @endif
       <div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         @foreach($products as $product)
         <div class="bg-white p-4 rounded shadow">
           <img src="{{ asset('storage/'.$product->image) }}" class="h-32 w-full object-cover rounded mb-3" alt="{{ $product->title }}">
-          <h3 class="font-medium">{{ $product->title }}</h3>
+          <h3 class="font-medium"><a href="{{ route('products.show', $product->id) }}">{{ $product->title }}</a></h3>
           <p class="text-sm text-gray-500">{{ \Illuminate\Support\Str::limit($product->description, 60) }}</p>
           <div class="mt-3 flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
 
@@ -34,6 +53,9 @@
         </div>
         @endforeach
       </div>
+      @if($products->hasPages())
+        <div class="mb-8">{{ $products->links() }}</div>
+      @endif
     </div>
 
     <aside>

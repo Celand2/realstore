@@ -12,7 +12,26 @@
     <div class="mb-4 p-3 rounded bg-green-100 text-green-800 shadow">{{ session('status') }}</div>
 @endif
 
+<form method="GET" action="{{ route('client-get-product') }}" class="grid md:grid-cols-4 gap-3 mb-8">
+    <input name="q" value="{{ request('q') }}" type="search" placeholder="Rechercher un produit" class="border rounded-lg px-4 py-2 md:col-span-2">
+    <select name="category" class="border rounded-lg px-4 py-2">
+        <option value="">Toutes les catégories</option>
+        @foreach($categories as $category)
+            <option value="{{ $category->id }}" @selected((string) request('category') === (string) $category->id)>{{ $category->name }}</option>
+        @endforeach
+    </select>
+    <select name="sort" class="border rounded-lg px-4 py-2">
+        <option value="">Plus récents</option>
+        <option value="price_asc" @selected(request('sort') === 'price_asc')>Prix croissant</option>
+        <option value="price_desc" @selected(request('sort') === 'price_desc')>Prix décroissant</option>
+    </select>
+    <button type="submit" class="md:col-span-4 bg-indigo-600 text-white rounded-lg px-4 py-2 hover:bg-indigo-700">Rechercher</button>
+</form>
+
 <!-- Grid -->
+@if($products->isEmpty())
+    <p class="text-gray-600">Aucun produit ne correspond à votre recherche.</p>
+@else
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
     @foreach ($products as $product)
     <!-- Card Produit -->
@@ -69,6 +88,8 @@
     @endforeach
 
 </div>
+<div class="mt-8">{{ $products->links() }}</div>
+@endif
 
 {{-- Modal --}}
 <div id="modalOverlay"

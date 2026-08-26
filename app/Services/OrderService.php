@@ -5,7 +5,10 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use RuntimeException;
+use App\Mail\OrderCreatedMail;
+use App\Mail\OrderStatusUpdatedMail;
 
 class OrderService
 {
@@ -36,7 +39,7 @@ class OrderService
         $total = $this->carts->total($items);
         $cart = $this->carts->getOrCreateCart($userId);
 
-        return DB::transaction(function () use ($items, $userId, $address, $total, $cart) {
+        $order = DB::transaction(function () use ($items, $userId, $address, $total, $cart) {
             $order = Order::create([
                 'user_id' => $userId,
                 'total' => $total,
@@ -60,6 +63,10 @@ class OrderService
 
             return $order;
         });
+
+        Mail::to($order->user->email)->send(new OrderCreatedMail($order->load('items.product')));
+
+        return $order;
     }
 
     /**
@@ -80,7 +87,7 @@ class OrderService
             throw new RuntimeException('Cette commande ne peut plus être annulée.');
         }
 
-        return DB::transaction(function () use ($order) {
+        $order = DB::transaction(function () use ($order) {
             // Recréditer le stock
             foreach ($order->items as $item) {
                 $item->product()->increment('stock', $item->quantity);
@@ -91,5 +98,37 @@ class OrderService
 
             return $order;
         });
+
+        Mail::to($order->user->email)->send(new OrderStatusUpdatedMail($order));
+
+        return $order;
+    }
+
+    public function updateStatus(int $orderId, string $status): Order
+    {
+        $allowedStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (!in_array($status, $allowedStatuses, true)) {
+            throw new RuntimeException('Statut de commande invalide.');
+        }
+
+        $order = Order::with('items')->findOrFail($orderId);
+        if ($order->status === 'cancelled' && $status !== 'cancelled') {
+            throw new RuntimeException('Une commande annulée ne peut plus être réactivée.');
+        }
+
+        $order = DB::transaction(function () use ($order, $status) {
+            if ($status === 'cancelled' && $order->status !== 'cancelled') {
+                foreach ($order->items as $item) {
+                    $item->product()->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update(['status' => $status]);
+            return $order;
+        });
+
+        Mail::to($order->user->email)->send(new OrderStatusUpdatedMail($order));
+
+        return $order;
     }
 }

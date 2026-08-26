@@ -50,10 +50,9 @@
             @csrf
             <label for="status" class="font-medium">Status</label>
             <select name="status" id="status" class="border p-2 rounded w-full sm:w-auto">
-                <option value="pending" @if($order->status=='pending') selected @endif>Pending</option>
-                <option value="processing" @if($order->status=='processing') selected @endif>Processing</option>
-                <option value="completed" @if($order->status=='completed') selected @endif>Completed</option>
-                <option value="cancelled" @if($order->status=='cancelled') selected @endif>Cancelled</option>
+                @foreach(['pending' => 'En attente', 'confirmed' => 'Confirmée', 'processing' => 'En préparation', 'shipped' => 'Expédiée', 'delivered' => 'Livrée', 'cancelled' => 'Annulée'] as $value => $label)
+                    <option value="{{ $value }}" @selected($order->status === $value)>{{ $label }}</option>
+                @endforeach
             </select>
             <button type="submit"
                     class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">

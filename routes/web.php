@@ -17,6 +17,7 @@ use App\Http\Middleware\CheckProfile;
 Route::get('/', [VisitorController::class, 'home'])->name('home');
 Route::get('/about', [VisitorController::class, 'about'])->name('about');
 Route::get('/products', [VisitorController::class, 'products'])->name('products');
+Route::get('/products/{id}', [VisitorController::class, 'showProduct'])->name('products.show');
 
 //Les routes qui passent par l'authentification
 Route::middleware('auth')->group(function (){
@@ -55,7 +56,7 @@ Route::middleware('auth')->group(function (){
 
     //Les routes pour les clients
     Route::prefix('client')->middleware('role:client')->group(function (){
-        Route::get('/dashboard',[ClientController::class,'index']);
+        Route::get('/dashboard',[ClientController::class,'index'])->name('client.dashboard');
         Route::get('/products',[ClientController::class,'getProducts'])->name('client-get-product'); 
 
         Route::post('/add-cart', [CartController::class, 'addToCart'])->name('cart.add');
