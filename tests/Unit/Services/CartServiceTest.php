@@ -23,7 +23,7 @@ class CartServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new CartService();
+        $this->service = new CartService;
     }
 
     protected function createUser(array $attributes = []): User

@@ -18,7 +18,7 @@ class OrderCreatedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmation de votre commande #' . $this->order->id,
+            subject: 'Confirmation de votre commande #'.$this->order->id,
         );
     }
 

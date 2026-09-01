@@ -8,7 +8,6 @@ use App\Models\Cart;
 use App\Models\CartProduct;
 use App\Models\Category;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\CartService;
@@ -28,7 +27,7 @@ class OrderServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new OrderService(new CartService());
+        $this->service = new OrderService(new CartService);
         Mail::fake();
     }
 
@@ -65,8 +64,8 @@ class OrderServiceTest extends TestCase
 
     protected function addProductToCart(int $userId, int $productId, int $quantity): Cart
     {
-        $cartService = new CartService();
-        $cartService->addProducts($userId, [[ 'id' => $productId, 'quantity' => $quantity ]]);
+        $cartService = new CartService;
+        $cartService->addProducts($userId, [['id' => $productId, 'quantity' => $quantity]]);
 
         return $cartService->getOrCreateCart($userId);
     }
@@ -92,7 +91,7 @@ class OrderServiceTest extends TestCase
             'price' => '1200.00',
         ]);
         $this->assertSame(3, $product->fresh()->stock);
-        $this->assertCount(0, (new CartService())->getItems($user->id));
+        $this->assertCount(0, (new CartService)->getItems($user->id));
 
         Mail::assertSent(OrderCreatedMail::class, function ($mail) use ($order) {
             return $mail->order->id === $order->id;
@@ -113,7 +112,7 @@ class OrderServiceTest extends TestCase
     {
         $user = $this->createUser(['email' => 'stock@example.com']);
         $product = $this->createProduct(['title' => 'Stock limité', 'stock' => 2]);
-        $cart = (new CartService())->getOrCreateCart($user->id);
+        $cart = (new CartService)->getOrCreateCart($user->id);
 
         CartProduct::create([
             'cart_id' => $cart->id,

@@ -17,7 +17,7 @@ class OrderStatusUpdatedMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Mise à jour de votre commande #' . $this->order->id);
+        return new Envelope(subject: 'Mise à jour de votre commande #'.$this->order->id);
     }
 
     public function content(): Content

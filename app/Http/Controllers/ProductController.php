@@ -6,22 +6,26 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function getProducts(){
+    public function getProducts()
+    {
         $products = Product::with('category')->get();
+
         return view('admin.product.listProduct', compact('products'));
     }
 
-    public function addProduct(){
+    public function addProduct()
+    {
         $categories = Category::all();
+
         return view('admin.product.addProduct', compact('categories'));
     }
 
-    public function storeProduct(StoreProductRequest $request){
+    public function storeProduct(StoreProductRequest $request)
+    {
         $data = $request->validated();
 
         $imagePath = $request->file('image')->store('products', 'public');
@@ -39,10 +43,12 @@ class ProductController extends Controller
         return redirect()->route('get-products')->with('status', 'Produit ajouté avec succès !');
     }
 
-    public function editProduct($id){
+    public function editProduct($id)
+    {
         $id = $this->decodeId($id);
         $product = Product::findOrFail($id);
         $categories = Category::all();
+
         return view('admin.product.edit', compact('product', 'categories'));
     }
 
@@ -75,6 +81,7 @@ class ProductController extends Controller
     {
         $id = $this->decodeId($id);
         $product = Product::with('category')->findOrFail($id);
+
         return view('admin.product.show', compact('product'));
     }
 

@@ -16,6 +16,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         $decoded = Hashids::decode((string) $this->route('id'));
         $categoryId = $decoded[0] ?? 0;
+
         return [
             'name' => "required|string|max:255|unique:categories,name,{$categoryId}",
             'description' => 'nullable|string',

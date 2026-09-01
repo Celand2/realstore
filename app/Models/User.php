@@ -3,11 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Cart;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -20,6 +19,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $table = 'users';
+
     protected $fillable = [
         'name',
         'email',
@@ -28,8 +28,9 @@ class User extends Authenticatable
     ];
 
     // Cette function montre que un user possede plusieurs carts
-    public function carts():HasMany{
-        return $this->hasMany(Cart::class,'user_id','id');
+    public function carts(): HasMany
+    {
+        return $this->hasMany(Cart::class, 'user_id', 'id');
     }
 
     /**

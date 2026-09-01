@@ -13,6 +13,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::orderBy('created_at', 'desc')->paginate(20);
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -40,6 +41,7 @@ class UserController extends Controller
     {
         $id = $this->decodeId($id);
         $user = User::findOrFail($id);
+
         return view('admin.users.edit', compact('user'));
     }
 
@@ -58,7 +60,7 @@ class UserController extends Controller
         $user->name = $data['name'];
         $user->email = $data['email'];
         $user->role = $data['role'];
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
         $user->save();
@@ -77,6 +79,7 @@ class UserController extends Controller
         }
 
         $user->delete();
+
         return redirect()->route('admin.users.index')->with('status', 'Utilisateur supprimé.');
     }
 }

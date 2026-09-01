@@ -2,20 +2,19 @@
 
 namespace App\Providers;
 
-use view;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Laravel\Fortify\Fortify;
 use App\Actions\Fortify\CreateNewUser;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Cache\RateLimiting\Limit;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
+use App\Actions\Fortify\UpdateUserProfileInformation;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
-use App\Actions\Fortify\UpdateUserProfileInformation;
-use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
+use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -24,29 +23,31 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //Redirection après la déconnexion
-        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+        // Redirection après la déconnexion
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
                 return redirect('/login');
             }
         });
 
-        //Redirection après login
-        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+        // Redirection après login
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse
+        {
             public function toResponse($request)
             {
                 $user = $request->user();
-                if($user->role === 'admin') {
+                if ($user->role === 'admin') {
                     return redirect('/admin/dashboard');
-                }
-                elseif($user->role === 'client') {
+                } elseif ($user->role === 'client') {
                     return redirect('/client/dashboard');
                 }
+
                 return redirect('/');
             }
         });
-        
+
     }
 
     /**
@@ -59,12 +60,12 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
-        
+
         Fortify::loginView(function () {
             return view('auth.login');
         });
 
-        Fortify::registerView(function(){
+        Fortify::registerView(function () {
             return view('auth.register');
         });
 

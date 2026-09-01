@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\OrderCreatedMail;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use RuntimeException;
-use App\Mail\OrderCreatedMail;
-use App\Mail\OrderStatusUpdatedMail;
 
 class OrderService
 {
@@ -19,6 +19,7 @@ class OrderService
      * décrémente le stock, puis vide le panier. Le tout dans une transaction.
      *
      * @return Order La commande créée
+     *
      * @throws RuntimeException Si le panier est vide ou si le stock est insuffisant
      */
     public function checkout(int $userId, string $address): Order
@@ -31,7 +32,7 @@ class OrderService
 
         // Vérification globale du stock avant de créer la commande
         foreach ($items as $item) {
-            if (!$item->product || $item->quantity > $item->product->stock) {
+            if (! $item->product || $item->quantity > $item->product->stock) {
                 throw new RuntimeException('Le stock de l\'un des produits a changé.');
             }
         }
@@ -107,7 +108,7 @@ class OrderService
     public function updateStatus(int $orderId, string $status): Order
     {
         $allowedStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
-        if (!in_array($status, $allowedStatuses, true)) {
+        if (! in_array($status, $allowedStatuses, true)) {
             throw new RuntimeException('Statut de commande invalide.');
         }
 
@@ -124,6 +125,7 @@ class OrderService
             }
 
             $order->update(['status' => $status]);
+
             return $order;
         });
 

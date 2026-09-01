@@ -45,6 +45,7 @@ class CartService
      * Ajoute une liste de produits au panier, en gérant le stock.
      *
      * @param  array<int, array{id: int, quantity: int}>  $products
+     *
      * @throws RuntimeException
      */
     public function addProducts(int $userId, array $products, bool $sync = false): Cart

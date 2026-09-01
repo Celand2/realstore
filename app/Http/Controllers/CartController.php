@@ -27,7 +27,7 @@ class CartController extends Controller
         ]);
 
         $userId = Auth::id();
-        if (!$userId) {
+        if (! $userId) {
             return response()->json(['message' => 'Vous devez être connecté.'], 401);
         }
 
@@ -41,7 +41,7 @@ class CartController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        if (!$request->expectsJson()) {
+        if (! $request->expectsJson()) {
             return redirect()->route('cart.index')->with('status', 'Produit ajouté au panier.');
         }
 
