@@ -1,17 +1,5 @@
 /**
  * Logique du panier modal côté client.
- *
- * Dépendances:
- *   - Éléments DOM: #modalOverlay, #modalContent, #cartItems, #cartItemTemplate,
- *                   #productModalOverlay, #productModalContent, #pd_close, etc.
- *   - Boutons d'action: .decreaseBtn, .increaseBtn, .removeBtn dans le template
- *   - axios (fourni par ./bootstrap)
- *   - Bouton "Add to cart" exposé via window.addTocart(product)
- *   - Bouton "Voir détails" exposé via window.showDetails(product)
- *
- * Configuration globale (variables Blade injectées via data-*):
- *   - data-cart-checkout-url  : URL où rediriger après save
- *   - data-cart-save-url      : URL POST pour enregistrer le panier
  */
 document.addEventListener('DOMContentLoaded', () => {
     const saveUrl = document.body.dataset.cartSaveUrl || '/client/add-cart';
@@ -35,9 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartItemTemplate = document.getElementById('cartItemTemplate');
     const productNumber = document.getElementById('productNumber');
     const btnSave = document.getElementById('btnSave');
-
-    // Si les éléments modal ne sont pas sur cette page, on n'attache rien.
     const modalAvailable = overlay && modal && cartItemsContainer && cartItemTemplate;
+
+    function showNotification(message, type = 'info') {
+        const existing = document.getElementById('cart-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'cart-toast';
+        toast.className = `fixed right-4 top-4 z-50 rounded-md px-4 py-3 text-sm font-medium text-white shadow-lg ${
+            type === 'error' ? 'bg-red-600' : type === 'success' ? 'bg-emerald-600' : 'bg-slate-800'
+        }`;
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
 
     function calculateTotal() {
         return cart.products.reduce(
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (totalEl) {
             totalEl.textContent = calculateTotal().toLocaleString('fr-FR') + ' FC';
         }
+
         if (productNumber) {
             productNumber.textContent = cart.products.reduce(
                 (count, product, index, products) => products.findIndex((item) => item.id === product.id) === index
@@ -79,12 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (productNumber) {
             productNumber.textContent = cart.products.length;
         }
+
         updateTotal();
+        showNotification(`${product.title} ajouté au panier`, 'success');
     }
 
     function saveCart() {
         if (!cart.products.length) {
-            alert('Votre panier est vide.');
+            showNotification('Votre panier est vide.', 'error');
             return;
         }
 
@@ -95,9 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch((error) => {
                 console.error('Error saving cart:', error);
-                alert(
-                    error.response?.data?.message ||
-                        'Erreur lors de la sauvegarde du panier'
+                showNotification(
+                    error.response?.data?.message || 'Erreur lors de la sauvegarde du panier',
+                    'error'
                 );
             });
     }
@@ -147,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (removeBtn) {
                 removeBtn.addEventListener('click', () => {
                     cart.products = cart.products.filter((p) => p.id !== product.id);
+                    showNotification('Produit retiré du panier', 'info');
                     viewCart();
                 });
             }
@@ -176,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200);
     }
 
-    // ----- Product details modal -----
     const productModalOverlay = document.getElementById('productModalOverlay');
     const productModalContent = document.getElementById('productModalContent');
     const pdClose = document.getElementById('pd_close');
@@ -184,14 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function showDetails(product) {
         if (!productModalOverlay) return;
         document.getElementById('pd_name').textContent = product.title;
-        document.getElementById('pd_category').textContent = product.category
-            ? product.category.name
-            : '';
+        document.getElementById('pd_category').textContent = product.category ? product.category.name : '';
         document.getElementById('pd_description').textContent = product.description || '';
         document.getElementById('pd_price').textContent = product.price + ' FC';
-        document.getElementById('pd_image').src = product.image
-            ? '/storage/' + product.image
-            : '';
+        document.getElementById('pd_image').src = product.image ? '/storage/' + product.image : '';
 
         productModalOverlay.classList.remove('hidden');
         productModalOverlay.classList.add('flex');
@@ -213,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (pdClose) pdClose.addEventListener('click', closeProductModal);
 
-    // ----- Wiring global -----
     if (openBtn) {
         openBtn.addEventListener('click', () => {
             if (modalAvailable) {
@@ -228,8 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSave && modalAvailable) btnSave.addEventListener('click', saveCart);
 
     updateTotal();
-
-    // Expose aux onclick="" inline des boutons "Add to cart" / "Voir détails"
     window.addTocart = addTocart;
     window.showDetails = showDetails;
 });
