@@ -1,5 +1,7 @@
 # Directives du projet RealStore pour Copilot
 
+> Notice de documentation : les fichiers Markdown du dépôt doivent être maintenus à jour à chaque changement. Les instructions, le README et les notes du projet reflètent l’état réel du dépôt et doivent être synchronisés avec les évolutions fonctionnelles.
+
 ## RÈGLES D'OR DU PROJET
 1. **Priorité absolue :** Couverture de tests et propreté du code (Objectif : rendre le dépôt 100 % autonome et testé).
 2. **Workflow obligatoire :** Chaque modification ou nouvelle fonctionnalité métier DOIT inclure son test PHPUnit/Pest.

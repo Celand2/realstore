@@ -1,59 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RealStore
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+RealStore est un projet e-commerce Laravel 12 orienté boutique en ligne, panier client, commande et gestion du stock.
 
-## About Laravel
+> Notice de documentation : ce dépôt évolue en continu. À chaque changement fonctionnel, technique ou de procédure, il faut mettre à jour le README et les fichiers Markdown concernés pour refléter l’état réel du projet.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Vue d’ensemble
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Gestion des produits et catégories
+- Panier client avec validation de stock
+- Commandes avec statut et stock réajusté
+- Authentification client/admin
+- CI/CD avec GitHub Actions
+- Docker local pour un démarrage isolé
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+- PHP 8.3
+- Laravel 12
+- SQLite en mémoire pour les tests
+- MySQL pour le runtime local via Docker
+- Vite + Tailwind
+- PHPUnit
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Prérequis
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.3+
+- Composer
+- Node.js 20+
+- MySQL 8 ou SQLite pour les tests
 
-## Laravel Sponsors
+## Installation depuis zéro
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone <url-du-repo>
+cd realstore
+cp .env.example .env
+composer install
+npm install
+php artisan key:generate
+php artisan migrate
+npm run build
+php artisan serve
+```
 
-### Premium Partners
+## Commandes courantes
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# Tests
+php artisan test
 
-## Contributing
+# Vérifier le style PHP
+./vendor/bin/pint --test
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Corriger le style PHP
+./vendor/bin/pint
 
-## Code of Conduct
+# Construire les assets front
+npm run build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Tests et qualité
 
-## Security Vulnerabilities
+Le dépôt suit les règles suivantes :
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- chaque fonctionnalité métier doit avoir son test
+- les tests doivent utiliser SQLite mémoire et `RefreshDatabase`
+- le code PHP doit rester propre via `pint`
+- l’exécution complète de la suite est obligatoire avant validation
 
-## License
+## Architecture principale
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `app/Services/CartService.php` : gestion du panier et contrôle du stock
+- `app/Services/OrderService.php` : checkout, annulation, statut, décrement/increment stock
+- `app/Models/` : modèles Eloquent
+- `resources/js/cart.js` : logique client du panier
+- `tests/Unit/Services/` : tests unitaires des services
+- `.github/workflows/ci.yml` : pipeline CI
+- `docker-compose.yml` : environnement local
+
+## CI/CD
+
+Le workflow GitHub Actions exécute au minimum :
+
+- `composer install`
+- `npm ci`
+- `./vendor/bin/pint --test`
+- `php artisan test`
+
+## Docker
+
+Le projet inclut un environnement Docker local :
+
+```bash
+docker compose up --build
+```
+
+## Règles de contribution
+
+- un changement fonctionnel = un commit
+- un correctif ou ajout métier doit être accompagné de son test
+- les fichiers Markdown du dépôt doivent être maintenus à jour avec l’état réel du projet
+- toute modification doit être validée par `./vendor/bin/pint` et `php artisan test`
+
+## État actuel
+
+Le projet couvre actuellement :
+
+- gestion du panier et du stock
+- test unitaire du service de panier
+- test unitaire du service de commande
+- CI GitHub Actions
+- environnement Docker local
+- documentation projet de démarrage
+

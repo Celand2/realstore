@@ -1,5 +1,7 @@
 # Directives du projet RealStore
 
+> Notice de documentation : les fichiers Markdown du dépôt doivent refléter l’état réel du projet. À chaque changement fonctionnel, technique ou de procédure, ce fichier et les autres documents concernés doivent être mis à jour.
+
 ## Objectif Prioritaire : Conformité & Valeur du Dépôt
 Avant d'ajouter toute nouvelle fonctionnalité métier :
 1. Chaque modification doit être accompagnée de son test automatisé.
