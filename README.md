@@ -95,6 +95,8 @@ Le projet inclut un environnement Docker local :
 docker compose up --build
 ```
 
+L'application est ensuite disponible à l'adresse `http://localhost:8000`.
+
 ## Règles de contribution
 
 - un changement fonctionnel = un commit
