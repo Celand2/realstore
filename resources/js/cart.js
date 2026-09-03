@@ -8,10 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let cart = { products: [] };
 
+    function logClientError(error, context = {}) {
+        const message = error instanceof Error ? error.message : String(error);
+        const stack = error instanceof Error ? error.stack : undefined;
+
+        axios.post('/client/log', {
+            message,
+            stack,
+            context: { ...context, url: window.location.href },
+        }).catch(() => {});
+    }
+
     try {
         cart.products = JSON.parse(document.body.dataset.cartItems || '[]');
     } catch (error) {
-        console.error('Impossible de charger le panier:', error);
+        logClientError(error, { operation: 'load_cart' });
     }
 
     const openBtn = document.getElementById('openModal');
