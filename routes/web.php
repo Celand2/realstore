@@ -16,6 +16,12 @@ Route::get('/', [VisitorController::class, 'home'])->name('home');
 Route::get('/about', [VisitorController::class, 'about'])->name('about');
 Route::get('/products', [VisitorController::class, 'products'])->name('products');
 Route::get('/products/{id}', [VisitorController::class, 'showProduct'])->name('products.show');
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'service' => config('app.name'),
+    ]);
+})->name('health');
 
 // Les routes qui passent par l'authentification
 Route::middleware('auth')->group(function () {
