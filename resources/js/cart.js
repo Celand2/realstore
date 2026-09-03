@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = checkoutUrl;
             })
             .catch((error) => {
-                console.error('Error saving cart:', error);
+                logClientError(error, { operation: 'save_cart' });
                 showNotification(
                     error.response?.data?.message || 'Erreur lors de la sauvegarde du panier',
                     'error'
