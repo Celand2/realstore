@@ -43,6 +43,17 @@ npm run build
 php artisan serve
 ```
 
+## Run tests offline
+
+Après un clone, l'installation complète SQLite peut être lancée avec une seule commande :
+
+```bash
+composer run setup && php artisan test
+```
+
+Le script crée `.env`, installe Composer et npm, génère la clé Laravel, exécute les migrations
+SQLite et construit les assets. Aucun service MySQL ou Redis n'est requis pour les tests.
+
 ## Commandes courantes
 
 ```bash
