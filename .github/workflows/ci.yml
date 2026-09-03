@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  php:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,20 +21,11 @@ jobs:
           extensions: mbstring, bcmath, dom, fileinfo, gd, intl, pdo_sqlite, zip
           coverage: none
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
       - name: Copy environment file
         run: cp .env.example .env
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
-
-      - name: Install JavaScript dependencies
-        run: npm ci
 
       - name: Generate application key
         run: php artisan key:generate
@@ -44,3 +35,4 @@ jobs:
 
       - name: Run Laravel tests
         run: php artisan test
+
