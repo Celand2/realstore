@@ -39,7 +39,7 @@
             "composer install",
             "@php artisan key:generate",
             "@php artisan migrate --database=sqlite --force",
-            "npm install",
+            "npm ci",
             "npm run build"
         ],
         "dev": [
