@@ -4,8 +4,8 @@
 
 @section('content')
 
-<div class="max-w-4xl mx-auto px-6 py-12">
-    <div class="bg-white p-8 rounded shadow">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div class="bg-white p-5 sm:p-8 rounded shadow">
         <h2 class="text-2xl font-bold mb-6">Your profile</h2>
 
         @if(session('status'))
