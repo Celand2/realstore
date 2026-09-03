@@ -22,6 +22,7 @@ Route::get('/health', function () {
         'service' => config('app.name'),
     ]);
 })->name('health');
+Route::post('/client/log', [App\Http\Controllers\ClientErrorController::class, 'store'])->name('client.errors');
 
 // Les routes qui passent par l'authentification
 Route::middleware('auth')->group(function () {
