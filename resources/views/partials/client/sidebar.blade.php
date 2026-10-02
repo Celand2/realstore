@@ -1,5 +1,5 @@
 <!-- Client Sidebar -->
-<aside data-sidebar class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col bg-white shadow-lg transition-transform duration-200 md:sticky md:top-0 md:h-screen md:translate-x-0">
+<aside data-sidebar class="fixed inset-y-0 left-0 z-50 flex w-72 shrink-0 -translate-x-full flex-col bg-white shadow-lg transition-transform duration-200 md:sticky md:top-0 md:h-screen md:translate-x-0">
     <div class="flex items-center justify-between border-b p-6">
         <div class="text-xl font-bold sm:text-2xl">Espace Client</div>
         <button data-sidebar-close type="button" class="rounded p-2 text-gray-500 hover:bg-gray-100 md:hidden" aria-label="Fermer le menu">

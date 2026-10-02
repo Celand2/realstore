@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\VisitorController;
 use Illuminate\Support\Facades\Route;
@@ -71,7 +72,14 @@ Route::middleware('auth')->group(function () {
 
     });
 
+    Route::get('/payment/{orderId?}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::get('/payment/success/{orderId?}', [PaymentController::class, 'success'])->name('payment.success');
+    Route::post('/payment/create-intent', [PaymentController::class, 'createPaymentIntent'])->name('payment.create-intent');
+    Route::post('/payment/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
+
 });
+
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 // Profil utilisateur
 Route::middleware('auth')->group(function () {

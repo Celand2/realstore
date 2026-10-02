@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="max-w-7xl mx-auto px-6 py-12">
-  <div class="grid lg:grid-cols-3 gap-8">
+  <div class="grid lg:grid-cols-2 gap-8">
     <div class="col-span-2">
       <h1 class="text-3xl font-bold mb-4">Bienvenue, {{ auth()->user()->name }}</h1>
       <p class="text-gray-600 mb-6">Voici un aperçu rapide de vos produits et activités récentes.</p>
@@ -30,7 +30,7 @@
       @if($products->isEmpty())
         <p class="text-gray-600">Aucun produit ne correspond à votre recherche.</p>
       @endif
-      <div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
+      <div class="grid sm:grid-cols-5 lg:grid-cols-4 gap-4 mb-8">
         @foreach($products as $product)
         <div class="bg-white p-4 rounded shadow">
           <img src="{{ asset('storage/'.$product->image) }}" class="h-32 w-full object-cover rounded mb-3" alt="{{ $product->title }}">
@@ -58,7 +58,7 @@
       @endif
     </div>
 
-    <aside>
+    <!-- <aside>
       <div class="bg-white p-4 rounded shadow mb-4">
         <h3 class="font-semibold mb-2">Mon compte</h3>
         <ul class="text-sm space-y-2">
@@ -89,7 +89,7 @@
         <p class="text-sm text-gray-500">Aucun panier récent.</p>
         @endif
       </div>
-    </aside>
+    </aside> -->
   </div>
 </div>
 
